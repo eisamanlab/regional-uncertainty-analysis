@@ -1,0 +1,10 @@
+sources:
+  OISST:
+    description: NetCDF files for EN.4.2.2 analyses
+    driver: netcdf
+    parameters:
+      year:
+        description: Year of the dataset
+        type: int
+    args:
+      urlpath: /home/ljg48/project/data/OISST/processed/oisst-avhrr-v02r01.1x1.{{year}}.nc

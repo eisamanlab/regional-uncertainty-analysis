@@ -1,0 +1,13 @@
+sources:
+
+  GCB_models:
+    description: NetCDF files for pCO2 models
+    driver: netcdf
+    args:
+      urlpath: /home/ljg48/project/data/GCB2023/processed/gcb-2023-models_1x1.nc
+
+  GCB_producss:
+    description: NetCDF files for pCO2 models
+    driver: netcdf
+    args:
+      urlpath: /home/ljg48/project/data/GCB2023/processed/gcb-2023-dataprods_1x1.nc

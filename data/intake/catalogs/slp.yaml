@@ -1,0 +1,10 @@
+sources:
+  ERA5:
+    description: NetCDF files for ERA5 sea level pressure
+    driver: netcdf
+    parameters:
+      year:
+        description: Year of the dataset
+        type: int
+    args:
+      urlpath: /home/ljg48/project/data/ERA5_sp/processed/e5.oper.an.sfc.sp.1x1.{{year}}.nc

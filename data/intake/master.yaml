@@ -1,0 +1,54 @@
+plugins:
+  source:
+    - module: intake_xarray
+
+
+description: "FluxError Master Data Catalog"
+
+metadata:
+  version: 0.1
+  author: "Luke Gloege (lucas.gloege@yale.edu)"
+  lastUpdated: "2024"
+  
+sources:
+  sss:
+    description: Catalog for Sea Surface Salinity
+    driver: intake.catalog.local.YAMLFileCatalog
+    args:
+      path: "{{ CATALOG_DIR }}/catalogs/sss.yaml"
+
+  sst:
+    description: Catalog for Sea Surface Temperature
+    driver: intake.catalog.local.YAMLFileCatalog
+    args:
+      path: "{{ CATALOG_DIR }}/catalogs/sst.yaml"
+
+  pco2_ocn:
+    description: Catalog for ocean pCO2
+    driver: intake.catalog.local.YAMLFileCatalog
+    args:
+      path: "{{ CATALOG_DIR }}/catalogs/pco2_ocn.yaml"
+
+  pco2_atm:
+    description: Catalog for Atmospheric pCO2
+    driver: intake.catalog.local.YAMLFileCatalog
+    args:
+      path: "{{ CATALOG_DIR }}/catalogs/pco2_atm.yaml"
+
+  wind:
+    description: Catalog for Wind
+    driver: intake.catalog.local.YAMLFileCatalog
+    args:
+      path: "{{ CATALOG_DIR }}/catalogs/wind.yaml"
+
+  slp:
+    description: Catalog for Sea Level Pressure
+    driver: intake.catalog.local.YAMLFileCatalog
+    args:
+      path: "{{ CATALOG_DIR }}/catalogs/slp.yaml"
+
+  masks:
+    description: Catalog for masks
+    driver: intake.catalog.local.YAMLFileCatalog
+    args:
+      path: "{{ CATALOG_DIR }}/catalogs/masks.yaml"
