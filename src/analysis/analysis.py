@@ -4,6 +4,7 @@ author: Luke Gloege
 """
 
 import logging
+import os
 from pathlib import Path
 import warnings
 
@@ -14,15 +15,18 @@ from fluxerror import gas_transfer_velocity as kw
 from fluxerror import delta_pco2 as dpco2
 
 def main():
-    # data path
-    data_path = Path("/home/ljg48/project/data/oae-uncertainty-data/")
-    output_file = data_path / "fractional-uncertanties-1x1-1993-2022.nc"
+    # setup directories
+    data_dir = Path(os.path.abspath("../../data"))
+    processed_dir =  data_dir / "processed"
+    output_dir =  data_dir / "analysis-output"
     
+    output_file = output_dir / "fractional-uncertanties-1x1-1993-2022.nc"
+        
     # read data    
-    ds_sst = xr.open_dataset(data_path / "oisst-1x1-1993-2022.nc")
-    ds_sss = xr.open_dataset(data_path / "en4-1x1-1993-2022.nc")
-    ds_wind = xr.open_dataset(data_path / "wind-1x1-1993-2022.nc")
-    ds_pco2 = xr.open_dataset(data_path / "pco2-1x1-1993-2022.nc")
+    ds_sst = xr.open_dataset(processed_dir / "oisst-1x1-1993-2022.nc")
+    ds_sss = xr.open_dataset(processed_dir / "en4-1x1-1993-2022.nc")
+    ds_wind = xr.open_dataset(processed_dir / "wind-1x1-1993-2022.nc")
+    ds_pco2 = xr.open_dataset(processed_dir / "pco2-1x1-1993-2022.nc")
 
     # dictionary of input arguments
     input_kwargs = dict(
