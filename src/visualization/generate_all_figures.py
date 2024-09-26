@@ -413,6 +413,81 @@ def generate_flux_figure(figdir, filename="mean-flux-white-trans.png", savefig=T
         plt.savefig(figdir / filename, bbox_inches='tight')
 
 
+def plot_schmidt_number(figdir, filename="supplemental-schmidt-number.png", savefig=True):
+    import numpy as np
+    import matplotlib.pyplot as plt
+
+    # parameters
+    A = 2116.8 
+    B = -136.25   
+    C = 4.7353 
+    D = -0.092307  
+    E = 0.0007555  
+    
+    # temperature
+    T = np.arange(-2,40,0.1)
+    
+    # solubility
+    schmidt_number = lambda T : A + B*T + C*T*T + D*T*T*T + E*T*T*T*T
+    
+    
+    #========================
+    # create figure and axes
+    #========================
+    fig = plt.figure(figsize=(6*1.618, 6))
+    ax = plt.gca()
+    
+    ax.plot(T, schmidt_number(T), color='k', linewidth=3)
+    ax.set_xlabel(r"Temperature ($^{\circ}$C", fontsize=16)
+    ax.set_ylabel("Schmidt number (dimensionless)", fontsize=16)
+    
+    # Range ov axes
+    ax.set_ylim([0,2500])
+    ax.set_xlim([-2, 40])
+    
+    x_ticks = [-2] + list(range(0, 41, 5))  # or range(0, 41, 10) for increments of 10
+    ax.set_xticks(x_ticks)
+    
+    # Turn off the display of all ticks.
+    ax.tick_params(
+        which='both',  # Options for both major and minor ticks
+        top='off',  # turn off top ticks
+        left='off',  # turn off left ticks
+        right='off',  # turn off right ticks
+        bottom='off'
+    )  # turn off bottom ticks
+    
+    # Hide the right and top spines
+    ax.spines['right'].set_visible(False)
+    ax.spines['top'].set_visible(False)
+    
+    # major/minor tick lines
+    ax.grid(axis='y', which='major', color=[0.8, 0.8, 0.8], linestyle='-')
+    
+    # Turn off the display of all ticks.
+    ax.tick_params(
+        axis='both',
+        which='major',  # Options for both major and minor ticks
+        top='off',  # turn off top ticks
+        left='off',  # turn off left ticks
+        right='off',  # turn off right ticks
+        bottom='on',  # turn off bottom ticks
+        length=5
+    )
+    
+    # Only show ticks on the left and bottom spines
+    ax.yaxis.set_ticks_position('left')
+    ax.xaxis.set_ticks_position('bottom')
+    
+    # Labels
+    ax.tick_params(axis='x', labelsize=12)
+    ax.tick_params(axis='y', labelsize=12, labelleft=True, labelright=False)
+    
+    # Save the figure with tight bounding box
+    if savefig:
+        plt.savefig(figdir / filename, bbox_inches='tight', pad_inches=0.1)  
+
+
 if __name__ == "__main__":
     figure_dir = Path(os.path.abspath("../../figures"))
     data_dir = "../../data"
@@ -426,3 +501,4 @@ if __name__ == "__main__":
     generate_figure_3(figdir = figure_dir)
     generate_figure_4(figdir = figure_dir)
     generate_flux_figure(figdir = figure_dir)
+    plot_schmidt_number(figdir = figure_dir)
