@@ -6,6 +6,7 @@ Quantify uncertainty in history flux using the FluxError package.
 Project Organization
 --------------------
 
+```
 .
 ├── LICENSE
 ├── README.md          <- The top-level README for developers using this project
@@ -18,4 +19,5 @@ Project Organization
 └── src
     ├── analysis       <- analysis scripts
     └── visualization  <- scripts to generate figures
+```
 
