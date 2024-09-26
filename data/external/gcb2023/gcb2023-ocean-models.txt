@@ -1,0 +1,10 @@
+https://zenodo.org/records/10222484/files/GCB-2023_OceanModel_ACCESS_1959-2022.nc
+https://zenodo.org/records/10222484/files/GCB-2023_OceanModel_CESM_ETHZ_1959-2022.nc
+https://zenodo.org/records/10222484/files/GCB-2023_OceanModel_CNRM_ESM2_1_1959-2022.nc
+https://zenodo.org/records/10222484/files/GCB-2023_OceanModel_FESOM2_REcoM_1959-2022.nc
+https://zenodo.org/records/10222484/files/GCB-2023_OceanModel_IPSL_1959-2022.nc
+https://zenodo.org/records/10222484/files/GCB-2023_OceanModel_MOM6_Princeton_1959-2022.nc
+https://zenodo.org/records/10222484/files/GCB-2023_OceanModel_MPIOM_HAMOCC_1959-2022.nc
+https://zenodo.org/records/10222484/files/GCB-2023_OceanModel_MRI_ESM2_2_1959-2022.nc
+https://zenodo.org/records/10222484/files/GCB-2023_OceanModel_NEMO_PlankTOM12_1959-2022.nc
+https://zenodo.org/records/10222484/files/GCB-2023_OceanModel_NorESM_OC1_2_1959-2022.nc

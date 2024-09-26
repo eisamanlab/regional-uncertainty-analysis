@@ -1,0 +1,8 @@
+https://zenodo.org/records/10222484/files/GCB-2023_dataprod_CMEMS-LSCE-FFNN_1990-2022.nc
+https://zenodo.org/records/10222484/files/GCB-2023_dataprod_JENA-MLS_1957-2022.nc
+https://zenodo.org/records/10222484/files/GCB-2023_dataprod_JMA-MLR_1985-2022.nc
+https://zenodo.org/records/10222484/files/GCB-2023_dataprod_LDEO-HPD_1959-2022.nc
+https://zenodo.org/records/10222484/files/GCB-2023_dataprod_NIES-ML3_1980-2022.nc
+https://zenodo.org/records/10222484/files/GCB-2023_dataprod_OceanSODA-ETHZ_1982-2022.nc
+https://zenodo.org/records/10222484/files/GCB-2023_dataprod_SOM-FFN_1982-2022.nc
+https://zenodo.org/records/10222484/files/GCB-2023_dataprod_UoEX_WATv2_1985-2022.nc
