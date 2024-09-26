@@ -1,7 +1,7 @@
 Regional Uncertainty Analysis
 ==============================
 
-Quantify uncertainty in history flux using the FluxError package.
+Quantify uncertainty in historical CO2 flux using the FluxError package.
 
 Project Organization
 --------------------
