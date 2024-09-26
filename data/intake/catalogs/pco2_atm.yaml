@@ -1,7 +1,0 @@
-sources:
-
-  NOAA:
-    description: NetCDF files for NOAA Marine Boundary Layer
-    driver: netcdf
-    args:
-      urlpath: /home/ljg48/project/data/noaa-mbl/processed/noaa-mbl_197901-202301_1x1.nc

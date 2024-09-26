@@ -1,7 +1,0 @@
-sources:
-
-  lsm:
-    description: land sea mask
-    driver: netcdf
-    args:
-      urlpath: /home/ljg48/project/data/lsm/processed/ocean-mask_invariant_1x1.nc
