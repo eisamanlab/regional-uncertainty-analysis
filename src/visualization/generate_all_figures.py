@@ -27,6 +27,38 @@ from plotting import (
     plot_data
 )
 
+from cartopy.util import add_cyclic_point
+def xr_add_cyclic_point(data, cyclic_coord=None):
+    '''
+    cyclic_point : a wrapper for catopy's apply_ufunc
+
+    Inputs
+    =============
+    data         : dataSet you want to add cyclic point to
+    cyclic_coord : coordinate to apply cyclic to
+
+    Returns
+    =============
+    cyclic_data : returns dataset with cyclic point added
+
+    '''
+    # Note: this is a little hacky, do not know why I need to do steps 1 and 3
+    # This was only way I could make this work so I don't get a line on my plots
+    
+    # 1. need to change from 0-360 to -180-180
+    data = data.assign_coords(lon = (((data.lon + 180) % 360) - 180)).sortby('lon')
+
+    # 2. then apply add cyclic point
+    data = xr.apply_ufunc(add_cyclic_point, data.load(),
+                          input_core_dims=[[cyclic_coord]], 
+                          output_core_dims=[['tmp_new']]).rename({'tmp_new': cyclic_coord})
+
+    # 3. then need to roll the longitude
+    data = data.roll(lon=-180)
+
+    return data
+    
+    
 def calculate_flux_and_uncertainty(data_dir):
     # Define directories
     data_dir = Path(os.path.abspath(data_dir))
@@ -50,7 +82,8 @@ def calculate_flux_and_uncertainty(data_dir):
 
     # Calculate total kw fractional uncertainty squared
     frac_kw_squared = (
-        (ds['frac_kw_umean']**2) 
+        (ds['frac_kw_a']**2)
+        + (ds['frac_kw_umean']**2) 
         + (ds['frac_kw_ustd']**2)
         + (ds['frac_kw_sc']**2)
     ) 
@@ -142,10 +175,12 @@ def generate_figure_1(figdir, filename="fractional-uncertainties-normalized.png"
     
     fig = plt.figure(dpi=200)
     grid = create_grid(fig, axes_pad=0.2, nrows_ncols=(1, 3), cbar_size='5%')
+
+    continent_color = [0.6,0.6,0.6]
     
     ind = 0
     data1 = ((ds['frac_pco2']**2) / frac_flux_squared ).mean('time').where(ds_mask['mask'] == 1)
-    grid = add_continents(grid, ind)
+    grid = add_continents(grid, ind, facecolor=continent_color)
     plot_data(grid, ind, data1, vmin=vmin, vmax=vmax, cmap=cmap)
     add_title(grid, ind, title=r'Ocean pCO$_2$', fontsize=8)
     
@@ -155,7 +190,7 @@ def generate_figure_1(figdir, filename="fractional-uncertainties-normalized.png"
     
     ind = 1
     data2 = (frac_kw_squared  / frac_flux_squared).mean('time').where(ds_mask['mask'] == 1)
-    grid = add_continents(grid, ind)
+    grid = add_continents(grid, ind, facecolor=continent_color)
     plot_data(grid, ind, data2, vmin=vmin, vmax=vmax, cmap=cmap)
     add_title(grid, ind, title='Gas Transfer Velocity', fontsize=8)
     
@@ -165,7 +200,7 @@ def generate_figure_1(figdir, filename="fractional-uncertainties-normalized.png"
     
     ind = 2
     data3 = (frac_sol_squared  / frac_flux_squared ).mean('time').where(ds_mask['mask'] == 1)
-    grid = add_continents(grid, ind)
+    grid = add_continents(grid, ind, facecolor=continent_color)
     plot_data(grid, ind, data3, vmin=vmin, vmax=vmax, cmap=cmap)
     add_title(grid, ind, title='Solubility', fontsize=8)
     
@@ -196,42 +231,55 @@ def generate_figure_2(figdir, filename="fractional-uncertainties-normalized-gas-
     vmin = 0
     vmax = 1
     cmap = mpl.cm.afmhot_r
+
+    continent_color = [0.6,0.6,0.6]
     
     fig = plt.figure(dpi=200)
     
-    grid = create_grid(fig, axes_pad=0.2, nrows_ncols=(1, 3), cbar_size='5%')
+    grid = create_grid(fig, axes_pad=0.2, nrows_ncols=(2, 2), cbar_size='5%')
+
     
-    
+
     ind = 0
-    data = ((ds['frac_kw_umean']**2) / frac_kw_squared).mean('time').where(ds_mask['mask'] == 1)
-    grid = add_continents(grid, ind)
+    data = ((ds['frac_kw_a']**2) / frac_kw_squared).mean('time').where(ds_mask['mask'] == 1)
+    grid = add_continents(grid, ind, facecolor=continent_color)
     plot_data(grid, ind, data, vmin=vmin, vmax=vmax, cmap=cmap)
-    add_title(grid, ind, title='Mean Wind Speed', fontsize=8)
+    add_title(grid, ind, title='Scale factor', fontsize=8)
     
     # Label 'A'
     grid[ind].text(0.0, 1.1, 'A', transform=grid[ind].transAxes, fontsize=12, verticalalignment='top', horizontalalignment='left')
-    
+
     
     ind = 1
-    data = ((ds['frac_kw_ustd']**2) / frac_kw_squared).mean('time').where(ds_mask['mask'] == 1)
-    grid = add_continents(grid, ind)
+    data = ((ds['frac_kw_umean']**2) / frac_kw_squared).mean('time').where(ds_mask['mask'] == 1)
+    grid = add_continents(grid, ind, facecolor=continent_color)
     plot_data(grid, ind, data, vmin=vmin, vmax=vmax, cmap=cmap)
-    add_title(grid, ind, title='Wind Speed Variance', fontsize=8)
+    add_title(grid, ind, title='Mean Wind Speed', fontsize=8)
     
     # Label 'B'
     grid[ind].text(0.0, 1.1, 'B', transform=grid[ind].transAxes, fontsize=12, verticalalignment='top', horizontalalignment='left')
     
+    
     ind = 2
+    data = ((ds['frac_kw_ustd']**2) / frac_kw_squared).mean('time').where(ds_mask['mask'] == 1)
+    grid = add_continents(grid, ind, facecolor=continent_color)
+    plot_data(grid, ind, data, vmin=vmin, vmax=vmax, cmap=cmap)
+    add_title(grid, ind, title='Wind Speed Variance', fontsize=8)
+    
+    # Label 'C'
+    grid[ind].text(0.0, 1.1, 'C', transform=grid[ind].transAxes, fontsize=12, verticalalignment='top', horizontalalignment='left')
+    
+    ind = 3
     data = ((ds['frac_kw_sc']**2) / frac_kw_squared).mean('time').where(ds_mask['mask'] == 1)
-    grid = add_continents(grid, ind)
+    grid = add_continents(grid, ind, facecolor=continent_color)
     plot_data(grid, ind, data, vmin=vmin, vmax=vmax, cmap=cmap)
     add_title(grid, ind, title='Schmidt number', fontsize=8)
     
     col = add_colorbar(grid, vmin=vmin, vmax=vmax, cmap=cmap)
     col.ax.set_xlabel('unitless')
     
-    # Label 'C'
-    grid[ind].text(0.0, 1.1, 'C', transform=grid[ind].transAxes, fontsize=12, verticalalignment='top', horizontalalignment='left')
+    # Label 'D'
+    grid[ind].text(0.0, 1.1, 'D', transform=grid[ind].transAxes, fontsize=12, verticalalignment='top', horizontalalignment='left')
     
     if savefig:
         plt.savefig(figdir / filename, bbox_inches='tight')
@@ -245,10 +293,12 @@ def generate_figure_3(figdir, filename="fractional-uncertainties-normalized-solu
     
     fig = plt.figure(dpi=200)    
     grid = create_grid(fig, axes_pad=0.2, nrows_ncols=(1, 2), cbar_size='5%')
+
+    continent_color = [0.6,0.6,0.6]
     
     ind = 0
     data = ((ds['frac_sol_sss']**2) / frac_sol_squared).mean('time').where(ds_mask['mask'] == 1)
-    grid = add_continents(grid, ind)
+    grid = add_continents(grid, ind, facecolor=continent_color)
     plot_data(grid, ind, data, vmin=vmin, vmax=vmax, cmap=cmap, ncolors=ncolors)
     contour_params = {
         'transform':ccrs.PlateCarree(central_longitude=0),
@@ -280,7 +330,7 @@ def generate_figure_3(figdir, filename="fractional-uncertainties-normalized-solu
     
     ind = 1
     data = ((ds['frac_sol_sst']**2)/ frac_sol_squared).mean('time').where(ds_mask['mask'] == 1)
-    grid = add_continents(grid, ind)
+    grid = add_continents(grid, ind, facecolor=continent_color)
     plot_data(grid, ind, data, vmin=vmin, vmax=vmax, cmap=cmap, ncolors=ncolors)
     add_title(grid, ind, title='Contribution from SST', fontsize=8)
     
@@ -297,6 +347,8 @@ def generate_figure_3(figdir, filename="fractional-uncertainties-normalized-solu
 def generate_figure_4(figdir, filename="flux-cv-dominant-term.png", savefig=True):
     fig = plt.figure(dpi=200) 
     grid = create_grid(fig, axes_pad=0.6, nrows_ncols=(2, 2), cbar_size='5%', cbar_mode='each')
+
+    continent_color = [0.6,0.6,0.6]
     
     ind = 0
     vmin = -3
@@ -304,7 +356,7 @@ def generate_figure_4(figdir, filename="flux-cv-dominant-term.png", savefig=True
     cmap = cm.cm.balance
     ncolors = 101
     data = Fco2.mean('time').where(ds_mask['mask'] == 1)
-    grid = add_continents(grid, ind)
+    grid = add_continents(grid, ind, facecolor=continent_color)
     plot_data(grid, ind, data, vmin=vmin, vmax=vmax, cmap=cmap)
     add_title(grid, ind, title=r'Mean FCO$_2$ (mol / m$^2$ / yr)', fontsize=8)
     col = add_colorbar_to_subplot(grid, ind, vmin=vmin, vmax=vmax, ncolors=ncolors, cmap=cmap, ticks=[-3, -2, -1, 0, 1, 2, 3])
@@ -318,7 +370,7 @@ def generate_figure_4(figdir, filename="flux-cv-dominant-term.png", savefig=True
     cmap = cm.cm.thermal
     ncolors = 101
     data = abs(delta_Fco2.mean('time').where(ds_mask['mask'] == 1))
-    grid = add_continents(grid, ind)
+    grid = add_continents(grid, ind, facecolor=continent_color)
     plot_data(grid, ind, data, vmin=vmin, vmax=vmax, ncolors=ncolors, cmap=cmap)
     add_title(grid, ind, title=r'$FCO_2$ uncertainty ($\delta FCO_2$) (mol / m$^2$ / yr)', fontsize=8)
     col = add_colorbar_to_subplot(grid, ind, vmin=vmin, vmax=vmax, ncolors=ncolors, cmap=cmap, ticks=[0, 0.25, 0.5, 0.75, 1])
@@ -334,7 +386,7 @@ def generate_figure_4(figdir, filename="flux-cv-dominant-term.png", savefig=True
     F =  abs(Fco2.mean('time').where(ds_mask['mask'] == 1))
     dF =  abs(delta_Fco2.mean('time').where(ds_mask['mask'] == 1))
     data = (dF / F ) 
-    grid = add_continents(grid, ind)
+    grid = add_continents(grid, ind, facecolor=[0.4,0.4,0.4])
     plot_data(grid, ind, data, vmin=vmin, vmax=vmax, ncolors=ncolors, cmap=cmap)
     contour_params = {
         'transform':ccrs.PlateCarree(central_longitude=0),
@@ -363,7 +415,7 @@ def generate_figure_4(figdir, filename="flux-cv-dominant-term.png", savefig=True
     ncolors=3
     
     data = data_dominant.where(ds_mask['mask'] == 1)
-    grid = add_continents(grid, ind)
+    grid = add_continents(grid, ind, facecolor=continent_color)
     plot_data(grid, ind, data, vmin=vmin, vmax=vmax, ncolors=ncolors, cmap=cmap)
     add_title(grid, ind, title=r'Dominant term', fontsize=8)
     
@@ -396,6 +448,8 @@ def generate_flux_figure(figdir, filename="mean-flux-white-trans.png", savefig=T
     """figure of mean flux with transparent background"""
     fig = plt.figure(dpi=200)    
     grid = create_grid(fig, axes_pad=0.6, nrows_ncols=(1, 1), cbar_size='5%', cbar_mode='each')
+
+    continent_color = [0.6,0.6,0.6]
     
     ind = 0
     vmin = -3
@@ -403,7 +457,7 @@ def generate_flux_figure(figdir, filename="mean-flux-white-trans.png", savefig=T
     cmap = cm.cm.balance
     ncolors = 101
     data = Fco2.mean('time').where(ds_mask['mask'] == 1)
-    grid = add_continents(grid, ind)
+    grid = add_continents(grid, ind, facecolor=continent_color)
     plot_data(grid, ind, data, vmin=vmin, vmax=vmax, cmap=cmap)
     col = add_colorbar_to_subplot(grid, ind, vmin=vmin, vmax=vmax, ncolors=ncolors, cmap=cmap, ticks=[-3, -2, -1, 0, 1, 2, 3])
     
@@ -494,6 +548,16 @@ if __name__ == "__main__":
     
     # analysis
     ds, ds_mask, frac_sol_squared, frac_kw_squared, frac_flux_squared, data_dominant, Fco2, delta_Fco2 = calculate_flux_and_uncertainty(data_dir)
+
+    # add cyclic point
+    ds = xr_add_cyclic_point(ds, cyclic_coord='lon')
+    ds_mask = xr_add_cyclic_point(ds_mask, cyclic_coord='lon')
+    frac_sol_squared = xr_add_cyclic_point(frac_sol_squared, cyclic_coord='lon')
+    frac_kw_squared = xr_add_cyclic_point(frac_kw_squared, cyclic_coord='lon')
+    frac_flux_squared = xr_add_cyclic_point(frac_flux_squared, cyclic_coord='lon')
+    data_dominant = xr_add_cyclic_point(data_dominant, cyclic_coord='lon')
+    Fco2 = xr_add_cyclic_point(Fco2, cyclic_coord='lon')
+    delta_Fco2 = xr_add_cyclic_point(delta_Fco2, cyclic_coord='lon')
     
     # generate figures
     generate_figure_1(figdir = figure_dir)

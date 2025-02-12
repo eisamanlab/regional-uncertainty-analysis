@@ -157,7 +157,7 @@ def plot_map(data, plot_label, cmap_label, vrange=[0, 1], cmap=cm.cm.amp, ncolor
     # Add Contintents
     grid[0].add_feature(cfeature.NaturalEarthFeature('physical', 'land', '110m', 
                                                      edgecolor='None', 
-                                                     facecolor=[0.3,0.3,0.3]))
+                                                     facecolor=[0.1,0.1,0.1]))
     
     # params for coastline
     params_coastline = {'facecolor': [0.25, 0.25, 0.25], 
