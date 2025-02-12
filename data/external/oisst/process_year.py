@@ -37,7 +37,7 @@ def main(year: int, input: str, output: str):
     
     # load data for specific year
     path = Path(input)
-    files = path.glob(f'*.{year}????.nc')
+    files = path.glob(f"*{year}????120000-UKMO-L4_GHRSST-SSTfnd-OSTIA-GLOB_REP-v02.0-fv02.0.dap.nc4")
     ds = xr.open_mfdataset([file for file in files])
 
     # removes zlev
