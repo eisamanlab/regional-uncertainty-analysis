@@ -23,17 +23,17 @@ def main():
     output_file = output_dir / "fractional-uncertanties-1x1-1993-2022.nc"
         
     # read data    
-    ds_sst = xr.open_dataset(processed_dir / "oisst-1x1-1993-2022.nc")
-    ds_sss = xr.open_dataset(processed_dir / "en4-1x1-1993-2022.nc")
+    ds_sst = xr.open_dataset(processed_dir / "sst-1x1-1993-2022.nc")
+    ds_sss = xr.open_dataset(processed_dir / "salinity-1x1-1993-2022.nc")
     ds_wind = xr.open_dataset(processed_dir / "wind-1x1-1993-2022.nc")
     ds_pco2 = xr.open_dataset(processed_dir / "pco2-1x1-1993-2022.nc")
 
     # dictionary of input arguments
     input_kwargs = dict(
-        temp_C = ds_sst['sst'],
-        S = ds_sss['salinity'],
-        delta_T = ds_sst['err'],
-        delta_S = ds_sss['salinity_uncertainty'],
+        temp_C = ds_sst['sst'].mean("product"),
+        S = ds_sss['salinity'].mean("product"),
+        delta_T = ds_sst['sst'].std("product"),
+        delta_S = ds_sss['salinity'].std("product"),
         u_mean = ds_wind['ws_mean'].mean("product"),
         u_std = ds_wind['ws_std'].mean("product"),
         delta_umean = ds_wind['ws_mean'].std("product"),
@@ -48,12 +48,14 @@ def main():
     frac_kw_umean = kw.wanninkhof2014.frac.kw_umean(**input_kwargs).to_dataset(name="frac_kw_umean")
     frac_kw_ustd = kw.wanninkhof2014.frac.kw_ustd(**input_kwargs).to_dataset(name="frac_kw_ustd")
     frac_kw_sc = kw.wanninkhof2014.frac.kw_sc(**input_kwargs).to_dataset(name="frac_kw_sc")
+    frac_kw_a = ((kw.wanninkhof2014.frac.kw_sc(**input_kwargs) * 0) + 0.2).to_dataset(name="frac_kw_a")
     frac_pco2 = dpco2.frac.pco2ocn(**input_kwargs).to_dataset(name="frac_pco2")
 
     # merge all the variables
     ds = xr.merge([
         frac_sol_sss,
         frac_sol_sst,
+        frac_kw_a,
         frac_kw_umean,
         frac_kw_ustd,
         frac_kw_sc,
