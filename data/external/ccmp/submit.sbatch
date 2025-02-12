@@ -15,7 +15,7 @@ conda activate dev
 start_year=1993
 end_year=1996
 batch_size=1
-url_list='/home/ljg48/palmer_scratch/data/CCMP/scripts/url-list-ccmp-v3.1_4.txt'
+url_list='/home/ljg48/palmer_scratch/data/CCMP/scripts/url-list-ccmp-v3.1.txt'
 raw_directory='/home/ljg48/palmer_scratch/data/CCMP/raw'
 processed_directory='/home/ljg48/palmer_scratch/data/CCMP/processed'
 
