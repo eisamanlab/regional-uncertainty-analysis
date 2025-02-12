@@ -33,7 +33,7 @@ def grid(lon_min=-89.5, lon_max=90, lat_min=0.5, lat_max=359.5, dlon=1.0, dlat=1
     return xr.Dataset(
         {
             "lat": (["lat"], np.arange(-89.5, 90, 1.0), {"units": "degrees_north"}),
-            "lon": (["lon"], np.arange(0.5, 359.5, 1.0), {"units": "degrees_east"}),
+            "lon": (["lon"], np.arange(0.5, 360, 1.0), {"units": "degrees_east"}),
         }
     )
 
@@ -78,8 +78,8 @@ def mask_great_lakes(ds):
 
 
 if __name__ == "__main__":
-    OUTPUT_DIR = "/home/ljg48/project/data/lsm/processed"
-
+    OUTPUT_DIR = "/home/ljg48/project/oae-uncertainty/data/processed"
+    
     ds = download_lsm()
 
     ds_grid = grid()
